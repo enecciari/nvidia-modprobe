@@ -1,0 +1,28 @@
+Author: Hiromasa YOSHIMOTO <hiromasa.yoshimoto@gmail.com>
+Description: use setuid(0) to preserve privileges over shell invocations
+ Fixing bug https://bugs.debian.org/734869 dash recently started to drop
+ privileges if euid != uid. (Bash has been doing that for a long time
+ already, but is usually not used for /bin/sh.)
+ The Debian modprobe configuration /etc/modprobe.d/nvidia.conf uses install
+ commands that require forking a shell from within modprobe to (recursively)
+ run further modprobe commands. If the shell drops privileges in setuid
+ contexts, the inner modprobe commands are run unprivileged, failing to load
+ the modules.
+ Run setuid(0) before forking modprobe to preserve privileges through to the
+ inner modprobe commands.
+Bug-Debian: https://bugs.debian.org/888952
+Forwarded: not-needed
+
+--- a/modprobe-utils/nvidia-modprobe-utils.c
++++ b/modprobe-utils/nvidia-modprobe-utils.c
+@@ -298,6 +298,10 @@ static int modprobe_helper(const int pri
+         return 0;
+     }
+ 
++    /* Workaround for debian's /etc/modprobe.d/nvidia.conf configuration.
++     * See Bug#888952 for details */
++    setuid(0);
++
+     /* Fork and exec modprobe from the child process. */
+ 
+     file_actions = silence_process_actions();
