@@ -1,3 +1,9 @@
+nvidia-modprobe (620.70.06-1) unstable; urgency=medium
+
+  * New upstream version
+
+ -- Emiliano Necciari <e.necciari@blogic.it>  Web, 4 Nov 2026 17:31:32 -0700
+
 nvidia-modprobe (615.71.09-1) unstable; urgency=medium
 
   * New upstream version
